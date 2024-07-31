@@ -1,0 +1,124 @@
+﻿
+<!doctype html>
+<html lang="tr-TR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@ViewData["Title"]-Yemek Sipariş Sistemi</title>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+  
+    <link href="~/css/site.css" rel="stylesheet" />
+    @RenderSection("styles", false)
+</head>
+<body>
+
+    <!--navbar starts-->
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color:#050C9C" data-bs-theme="dark">
+        <div class="container">
+            <!--offcanvas trigger starts-->
+            <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+                <i class="bi bi-list" data-bs-target="#offcanvasScrolling"></i>
+            </button>
+            <!--offcanvas trigger ends-->
+            <a class="navbar-brand" href="#">Yemek Sipariş Sistemi</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="collapse navbar-collapse mx-2" id="navbarSupportedContent">
+                
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown mt-3 mt-lg-0">
+                            <button class="btn text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-fill"></i>
+                                <span style="font-size:14px;">
+                                   @User?.Identity?.Name
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" style="background-color:#050C9C;">
+                                <li><button class="dropdown-item d-flex flex-row justify-content-between" type="button"><span>Bildirimler</span> <span class="badge bg-warning text-white">4</span></button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item  d-flex flex-row justify-content-between"  id="logoutBtn" role="button"><span>Çıkış Yap</span>  <i class="uil uil-sign-out-alt"></i></a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                
+            </div>
+        </div>
+    </nav>
+
+    <div class="offcanvas offcanvas-start sidebar-nav mt-4" style="background-color:#3572EF;" data-bs-scroll="true" data-bs-backdrop="true"
+         tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-body">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Restaurant/Index">
+                        <i class="bi bi-speedometer2 mx-2 link-icon"></i>
+                        <span class="link-name">Ana Sayfa</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Restaurant/Categories">
+                        <i class="bi bi-tag mx-2 link-icon"></i>
+                        <span class="link-name">Restoran Kategoriler</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Restaurant/Meals">
+                        <i class="bi bi-box mx-2 link-icon"></i>
+                        <span class="link-name">Yemekler</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Restaurant/Meal/Create">
+                        <i class="bi bi-truck mx-2 link-icon"></i>
+                        <span class="link-name">Yemek oluştur</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Home/Profile">
+                        <i class="bi bi-scooter mx-2 link-icon"></i>
+                        <span class="link-name">Profile</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--offcanvas ends-->
+    <main class="mb-5 pt-3">
+        @RenderBody()
+    </main>
+
+    <footer id="footer" class="text-center bg-light fixed-bottom p-2 mt-3 mt-lg-0">
+        <p class="m-0">Copyrights Yemek Sipariş Sistemi, &copy; 2023</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script>
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+
+        const logoutButton = document.getElementById("logoutBtn");
+        logoutButton.addEventListener("click", (e) => {
+            $.post("/Auth/Logout").done((r) => {
+                window.location.replace("/");
+            })
+        })
+    </script>
+
+    @RenderSection("scripts", false)
+
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Meals";
+}
+
+@model List<FoodOrderApp.Models.Domains.Dish>
+<div class="container">
+    <div class="row">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/Restaurant/Index" style="color:#050C9C;">Home</a>
+                </li>
+                <li class="breadcrumb-item active">Meals</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row py-3 justify-content-center">
+        <div class="col-12 mb-3">
+            <div class="table-responsive">
+                <table class="table align-middle caption-top text-center">
+                    <caption>Meals List</caption>
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Product Name</th>
+                            <th>Product Image</th>
+                            <th>Unit Price</th>
+                            <th>Category</th>
+                            <th>Company Name</th>
+                            <th>Detail</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="8">No Meals found!</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            int i = 1;
+                            foreach (var meal in Model)
+                            {
+                                <tr id="@meal.Id">
+                                    <td>@i</td>
+                                    <td>@meal.Name</td>
+                                    <td><img src="~/Meal/@meal.Image" + width="45" height="45" alt="Logo" style="object-fit:contain;" /></td>
+                                    <td>@meal.Price</td>
+                                    <td>@meal.Category?.Name</td>
+                                    <td>@meal.Company.CompanyName</td>
+                                    <td><a href="Meal/Details/@meal.Id" class="btn btn-sm btn-primary">Detail</a></td>
+                                    <td><a href="#" class="btn btn-sm btn-success">Edit</a></td>
+                                    <td><a onclick="OpenProductDeleteModal(@meal.Id, '@meal.Name')" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#productDeleteModal">Delete</a></td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12 text-center">
+            <a href="/Restaurant/Meal/Create" type="button" class="btn btn-sm btn-outline-primary">Add New Meal</a>
+        </div>
+    </div>
+</div>
+
+<!--toast start-->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Food Order System</strong>
+            <small>A moment ago...</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-message">
+        </div>
+    </div>
+</div>
+<!--toast end-->
+<!--Delete Modal-->
+<div class="modal" id="productDeleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Restaurant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="productDeleteModalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="btnDeleteProduct" class="btn btn-primary btn-sm">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Finish Delete Modal-->
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        function OpenProductDeleteModal(id, productName) {
+            $("#productDeleteModalMessage").text("Do you want to delete the product named " + productName + "?");
+            $("#btnDeleteProduct").data("data-id", id);
+        }
+
+        $(document).ready(function () {
+            $("#btnDeleteProduct").click(function () {
+                let productId = $("#btnDeleteProduct").data("data-id");
+                $.ajax({
+                    method: "post",
+                    url: "/restaurant/products/delete/" + productId,
+                    success: function (productName) {
+                        if (productName != null) {
+                            $("tr#" + productId).remove();
+                            $("#productDeleteModal").modal("toggle");
+                            TriggerToast(productName, "deleted");
+                        } else {
+                            $("#productDeleteModal").modal("toggle");
+                            alert("Product deletion failed!!!");
+                        }
+                    }
+                });
+            });
+        });
+
+        function TriggerToast(message, status) {
+            const toast = document.getElementById('toast')
+            const messageBody = document.getElementById("toast-message");
+            messageBody.innerText = "The product named " + message + " was successfully " + status;
+            const instance = bootstrap.Toast.getOrCreateInstance(toast)
+            instance.show();
+        }
+    </script>
+}

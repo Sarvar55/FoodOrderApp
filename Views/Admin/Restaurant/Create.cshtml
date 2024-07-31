@@ -1,0 +1,84 @@
+﻿@using FoodOrderApp.Models.Domains;
+@{
+    ViewData["Title"] = "Admin-Restoran Oluştur";
+    Role? role = ViewData["role"] as Role;
+}
+@model FoodOrderApp.Models.ViewModels.CreateCompanyRequest;
+<div class="container-fluid">
+    <div class="row">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/Admin/Index" style="color:indigo;">Ana Sayfa</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/Admin/Restaurants" style="color:indigo;">Restoranlar</a>
+                </li>
+                <li class="breadcrumb-item active">Oluştur</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row py-3 justify-content-center">
+        <div class="col-12 col-lg-8">
+            <form class="row g-3" method="post" action="/Admin/Restaurants/Create" enctype="multipart/form-data">
+                <div class="col-md-6">
+                    <label for="companyName" class="form-label">Company Name</label>
+                    <input type="text" asp-for="CompanyName" class="form-control shadow-none" id="companyName">
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="logo" class="form-label">Logo</label>
+                    <input type="file" asp-for="Logo" class="form-control shadow-none" id="logo" >
+                    <span asp-validation-for="Logo" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" asp-for="Email" class="form-control shadow-none" id="email" >
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" asp-for="Phone" class="form-control shadow-none" id="phone" >
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Şifre</label>
+                    <input type="password" asp-for="Password" class="form-control shadow-none" id="password">
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label for="province" class="form-label">Country</label>
+                    <input type="text" name="Country" class="form-control shadow-none" id="country" required>
+                   
+                </div>
+                <div class="col-md-6">
+                    <label for="district" class="form-label">City</label>
+                    <input type="text" name="City" class="form-control shadow-none" id="city" required>
+                  
+                </div>
+                <div class="col-md-6">
+                    <label for="neighbourhood" class="form-label">Neighbourhood</label>
+                    <input type="text" name="Neighbourhood" class="form-control shadow-none" id="neighbourhood" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="postalCode" class="form-label">PostalCode</label>
+                    <input type="text" name="PostalCode" class="form-control shadow-none" id="postalCode" required>
+                </div>
+                <div class="col-12">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="Description" class="form-control shadow-none" id="description" rows="3"></textarea>
+                </div><div class="col-12">
+                    <label for="description" class="form-label">About</label>
+                    <textarea name="About" class="form-control shadow-none" id="about" rows="3"></textarea>
+                </div>
+                <input hidden name="RoleId" value="@role?.Id" />
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary col-12 col-md-6">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

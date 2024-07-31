@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+@{
+    var companies = ViewBag.Companies as List<FoodOrderApp.Models.Domains.Company>;
+}
+
+<div class="container">
+    <div class="row mb-1">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">Home Page</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row mb-3 d-flex flex-row align-items-center justify-content-between">
+        <div class="col-12 col-md-6">
+            <h6 class="text-truncate">Restaurants You Can Order From</h6>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="input-group input-group-sm">
+                <input id="searchBox" type="search" class="form-control shadow-none" placeholder="Search a restaurant">
+                <button id="searchButton" class="btn btn-outline-primary" type="button"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-10">
+            <div class="row" id="companyList">
+                @if (companies == null || companies.Count == 0)
+                {
+                    <div class="col-12">
+                        <p class="text-center">No restaurants available!</p>
+                    </div>
+                }
+                else
+                {
+                    foreach (var company in companies)
+                    {
+                        <div class="col-12 col-sm-6 mb-3 col-lg-4">
+                            <div class="card border-0 shadow">
+                                <div class="card-header text-white text-center text-truncate" style="background-color:indigo; font-size:16px;">
+                                    @company?.Address.Country
+                                </div>
+                                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                                    <img src="/Company/@company?.Logo" height="90" style="width:50%; object-fit:contain;" alt="Logo" />
+                                    <p class="card-text text-truncate" style="font-size:12px;">@company?.Address?.City</p>
+                                    <p class="card-text text-truncate" style="font-size:12px;"><small class="text-body-secondary">@company?.Address?.AddressLine</small></p>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a href="/Customer/Restaurants/@company?.Id" class="btn btn-outline-primary btn-sm text-truncate" style="font-size:12px;">
+                                        <i class="uil uil-shopping-cart-alt"></i>
+                                        Start Shopping
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#searchButton').on('click', function () {
+                searchCompanies();
+            });
+
+            $('#searchBox').on('keyup', function (e) {
+                if (e.key === 'Enter') {
+                    searchCompanies();
+                }
+            });
+
+            function searchCompanies() {
+                var searchTerm = $('#searchBox').val().trim();
+
+                $.ajax({
+                    url: '/User/SearchCompanies',
+                    type: 'GET',
+                    data: { search: searchTerm },
+                    success: function (data) {
+                        $('#companyList').html(data);
+                    },
+                    error: function () {
+                        alert('Error occurred while searching.');
+                    }
+                });
+            }
+        });
+    </script>
+}

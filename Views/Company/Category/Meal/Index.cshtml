@@ -1,0 +1,56 @@
+﻿@using FoodOrderApp.Models.Domains
+@{
+    ViewData["Title"] = "Category Products";
+    Category? category = ViewData["Category"] as Category;
+}
+@model List<FoodOrderApp.Models.Domains.Dish>
+
+<div class="container">
+    <div class="row mb-3">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Restaurant/Index" style="color:050C9C;">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/Restaurant/Categories" style="color:050C9C;">Categories</a>
+                </li>
+                <li class="breadcrumb-item active">@category.Name</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row mb-3 d-flex align-items-center">
+        @if (Model.Count == 0)
+        {
+            <h1>No products found for the @category.Name category.</h1>
+        }
+        else
+        {
+            foreach (var meal in Model)
+            {
+                
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="card mb-3">
+                        <a href="/Restaurant/Meal/Details/@meal.Id">
+                            <div class="row g-0">
+                                <div class="col-md-4 d-flex align-items-center justify-content-center p-2">
+                                    <img src="/Meal/@meal.Image" class="img-fluid rounded-start" alt="@meal.Name" style="max-height: 150px; object-fit: cover; width: 100%;">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-decoration-none">@meal.Name</h5>
+                                        <p class="card-text text-truncate text-decoration-none">@meal.Description</p>
+                                        <p class="card-text text-start text-decoration-none">Price: <strong>@meal.Price TL</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                    </div>
+
+                
+
+            }
+        }
+    </div>
+</div>

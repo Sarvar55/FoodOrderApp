@@ -1,0 +1,108 @@
+﻿@using FoodOrderApp.Models.Domains
+@{
+    ViewData["Title"] = "MealMenu";
+    Layout = "~/Views/Shared/_DenemeLayout.cshtml";
+    List<Dish> dishes = ViewBag.Dishes as List<Dish> ?? new List<Dish>();
+}
+<div class="offcanvas offcanvas-start sidebar-nav mt-4" style="background-color:#3572EF;" data-bs-scroll="true" data-bs-backdrop="true"
+     tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+    <div class="offcanvas-body">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/User/Index">
+                    <i class="bi bi-speedometer2 mx-2 link-icon"></i>
+                    <span class="link-name">Ana Sayfa</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-list-ul mx-2 link-icon"></i>
+                    <span class="link-name">Siparişlerim</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-heart mx-2 link-icon"></i>
+                    <span class="link-name">Favoriler</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/User/Addresses">
+                    <i class="bi bi-geo-alt  mx-2 link-icon"></i>
+                    <span class="link-name">Adreslerim</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-credit-card mx-2 link-icon"></i>
+                    <span class="link-name">Kartlarım</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-person mx-2 link-icon"></i>
+                    <span class="link-name">Hesabım</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-3">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/" style="color:indigo;">Ana Sayfa</a>
+                </li>
+                <li class="breadcrumb-item active">Yemekler</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row py-3">
+        @if (dishes.Count == 0)
+        {
+            <div class="col-12 text-center">
+                <p>Üzgünüz, yemek bulunamadı!</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var dish in dishes)
+            {
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card border-0 shadow-sm">
+                        <img src="~/Meal/@dish.Image" class="card-img-top" alt="@dish.Name" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">@dish.Name</h5>
+                            <p class="card-text">@dish.Description</p>
+                            <p class="card-text">Fiyat: @dish.Price.ToString("C")</p>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <button class="btn btn-primary" onclick="addToCart(@dish.Id)">Sepete Ekle</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    function addToCart(dishId) {
+
+        console.log("DishId" + dishId);
+        $.post('/User/Cart/AddItem', { dishId: dishId }, function () {
+
+        }).fail(function (xhr, e, r) {
+            alert(xhr.responseText);
+        });
+    }
+</script>
+
+
+

@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Sepet";
+    var cartItems = ViewBag.CartItems as List<FoodOrderApp.Models.Domains.CartItem>;
+    var cartTotalPrice = ViewBag.CartTotalPrice;
+}
+
+<div class="container">
+    <div class="row mb-3">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/User/Index" style="color:indigo;">Ana Sayfa</a>
+                </li>
+                <li class="breadcrumb-item active">Sepet</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row py-3 justify-content-center">
+        <div class="col-12 mb-3">
+            <div class="table-responsive">
+                <table class="table align-middle caption-top text-center">
+                    <caption>Alışveriş Sepeti</caption>
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Ürün Adı</th>
+                            <th>Resmi</th>
+                            <th>Ürün Miktarı</th>
+                            <th>Birim Fiyat</th>
+                            <th>Alt Toplam</th>
+                            <th>Sil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (cartItems == null || cartItems.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="7">Sepet Boş!!!</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            int index = 1;
+                            foreach (var item in cartItems)
+                            {
+                                <tr id="item-@item.Id">
+                                    <td>@index</td>
+                                    <td>@item.Dish?.Name</td>
+                                    <td><img src="~/Meal/@item.Dish?.Image" width="50" height="50" style="object-fit:contain;" /></td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.Dish?.Price</td>
+                                    <td>@(item.Quantity * item.Dish?.Price)</td>
+                                    <td><button class="btn btn-danger btn-sm" onclick="DeleteItemInCart(@item.Id)">Sil</button></td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6"></td>
+                            <td>Total : <strong>@cartTotalPrice</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="col-12 text-center">
+            <a href="/" type="button" class="btn btn-sm btn-outline-primary">Yeni Ürün Ekle</a>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="placeOrder()">Sipariş Ver</button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        function DeleteItemInCart(itemId) {
+            $.post('/User/Cart/Item/Delete', { id: itemId })
+                .done(function (response) {
+                    alert("Silme başarıllı.");
+                    window.location.reload();
+                })
+                .fail(function () {
+                    alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+                });
+        }
+
+        function placeOrder() {
+            $.post('/Customer/Order/Create', {})
+                .done(function (response) {
+                    if (response.success) {
+                        alert("Sipariş başarıyla oluşturuldu.");
+                        window.location.href = "/Customer/Order/Details/" + response.orderId;
+                    } else {
+                        alert("Sipariş oluşturulurken bir hata gerçekleşti.");
+                    }
+                })
+                .fail(function () {
+                    alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+                });
+        }
+    </script>
+}

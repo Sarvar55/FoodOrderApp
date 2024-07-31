@@ -1,0 +1,234 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using FoodOrderApp.Models.Domains
+@{
+    string username = User?.Identity?.Name;
+   
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Food Order System</title>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @RenderSection("links",false)
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        .dropdown-menu {
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .btn {
+            border-radius: 0.25rem;
+        }
+
+        #footer {
+            background-color: #f8f9fa;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+
+        .sidebar {
+            background-color: #3572EF;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg position-sticky navbar-dark" style="background-color: #050C9C;">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="/">Yemek Sipariş Sistemi</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        @if (User.IsInRole("USER"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link hstack gap-2" href="/User/Cart">
+                                    <span>Cart</span>
+                                    <span class="badge text-white rounded-pill bg-warning" id="cartItemCount">0</span>
+                                </a>
+                            </li>
+                        }
+                        @if (User.IsInRole("USER") || User.IsInRole("COMPANY"))
+                        {
+                            <li class="nav-item dropdown position-relative">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @username
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="userDropdown">
+                                    <li><span class="dropdown-item-text">@username</span></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                                    <li><a class="dropdown-item" style="cursor:pointer" id="logoutUser">Logout</a></li>
+                                </ul>
+                            </li>
+                        }
+                       
+                        else if (User.IsInRole("ADMIN"))
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-light" href="/Admin/Index">Admin Page</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a asp-area="" class="btn btn-outline-light me-2" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="" class="btn btn-light" asp-controller="Auth" asp-action="Registration">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        @RenderBody()
+    </main>
+
+    <div class="container-fluid">
+        @if (User.IsInRole("USER"))
+        {
+            <div class="offcanvas offcanvas-start sidebar-nav mt-4" style="background-color:#3572EF;" data-bs-scroll="true" data-bs-backdrop="true"
+                 tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">
+                                <i class="bi bi-speedometer2 mx-2 link-icon"></i>
+                                <span class="link-name">Home Page</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/User/Addresses">
+                                <i class="bi bi-tag mx-2 link-icon"></i>
+                                <span class="link-name">Adresses</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/User/Cart">
+                                <i class="bi bi-box mx-2 link-icon"></i>
+                                <span class="link-name">Cart</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Home/Profile">
+                                <i class="bi bi-list-ul mx-2 link-icon"></i>
+                                <span class="link-name">Profile</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Restaurant/Meals">
+                                <i class="bi bi-box mx-2 link-icon"></i>
+                                <span class="link-name">Yemekler</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+         @if (User.IsInRole("COMPANY"))
+        {
+            <div class="offcanvas offcanvas-start sidebar-nav mt-4" style="background-color:#3572EF;" data-bs-scroll="true" data-bs-backdrop="true"
+                 tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Restaurant/Index">
+                                <i class="bi bi-speedometer2 mx-2 link-icon"></i>
+                                <span class="link-name">Ana Sayfa</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Restaurant/Categories">
+                                <i class="bi bi-tag mx-2 link-icon"></i>
+                                <span class="link-name">Restoran Kategoriler</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Restaurant/Meals">
+                                <i class="bi bi-box mx-2 link-icon"></i>
+                                <span class="link-name">Yemekler</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Restaurant/Meal/Create">
+                                <i class="bi bi-truck mx-2 link-icon"></i>
+                                <span class="link-name">Yemek oluştur</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Home/Profile">
+                                <i class="bi bi-scooter mx-2 link-icon"></i>
+                                <span class="link-name">Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+
+    <footer id="footer" class="text-center">
+        <p class="mb-0">Copyrights Food Order System, &copy; @DateTime.Now.Year</p>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            updateCartItemCount();
+
+            function updateCartItemCount() {
+                $.get('/User/GetCartItemCount', function (data) {
+                    $('#cartItemCount').text(data.count);
+                });
+            }
+
+            const logoutButton = document.getElementById("logoutUser");
+            if (logoutButton) {
+                logoutButton.addEventListener("click", () => {
+                    $.get("/Auth/Logout").done(() => {
+                        window.location.replace("/");
+                    });
+                });
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,89 @@
+﻿@{
+    ViewData["Title"] = "Add Meal";
+}
+
+@model FoodOrderApp.Models.ViewModels.CompanyCategory
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="mt-auto">
+        <form id="createMealForm" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="mealName" class="form-label">Meal Name</label>
+                <input type="text" class="form-control" id="mealName" name="Name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" class="form-control" id="price" name="Price" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Image of Meal</label>
+                <input type="file" class="form-control" id="image" name="Image" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" name="CategoryId" required>
+                    <option value="">Choose a category</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="company" class="form-label">Company</label>
+                <select class="form-select" id="company" name="CompanyId" required>
+                    <option value="">Choose a company</option>
+                    @foreach (var company in Model.Companys)
+                    {
+                        <option value="@company.Id">@company.CompanyName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="mealContent" class="form-label">Meal Content</label>
+                <textarea class="form-control" id="mealContent" name="Description" rows="3" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#createMealForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            $(document).ready(function () {
+                $('#createMealForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    var formData = new FormData(this);
+
+                    $.post({
+                        url: '@Url.Action("Create", "Meal")',
+                        data: formData,
+                        contentType: false,
+                        processData: false
+                    })
+                        .done(function (response) {
+                            window.location.replace("/Restaurant/Meal");
+                        })
+                        .fail(function (xhr, status, error) {
+                            console.log("Error: " + error);
+                        });
+                });
+            });
+    });
+</script>

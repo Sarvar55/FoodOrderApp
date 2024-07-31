@@ -1,0 +1,66 @@
+﻿@using FoodOrderApp.Models.Domains
+@{
+    ViewData["Title"] = "Admin-Kullanıcı Detay";
+    List<Role> roles = ViewData["Roles"] as List<Role>;
+}
+
+@model FoodOrderApp.Models.DTO.UserDto
+
+<div class="container-fluid">
+    <div class="row">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/Admin/Index" style="color:indigo;">Ana Sayfa</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/Admin/Users" style="color:indigo;">Kullanıcılar</a>
+                </li>
+                <li class="breadcrumb-item active">@Model?.UserName.ToUpper() @Model?.LastName.ToUpper() - @Model?.RoleName</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row py-3 justify-content-center">
+        <div class="col-12 col-lg-8">
+            <form class="row g-3" method="post" action="/Admin/Users/Update">
+                <input type="hidden" name="Id" value="@Model?.Id" />
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" name="UserName" value="@Model?.UserName" class="form-control shadow-none" id="name" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="surname" class="form-label">Surname</label>
+                    <input type="text" name="LastName" value="@Model?.LastName" class="form-control shadow-none" id="surname" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" name="Email" value="@Model.Email" class="form-control shadow-none" id="email" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="role" class="form-label">Role</label>
+                    <select id="role" name="RoleId" class="form-select shadow-none" required>
+                        @foreach (var role in roles)
+                        {
+                            if (role.Name != "COMPANY")
+                            {
+                                if (role.Name == Model?.RoleName)
+                                {
+                                    <option value="@role.Id" selected>@role.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@role.Id">@role.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary col-12 col-md-6">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

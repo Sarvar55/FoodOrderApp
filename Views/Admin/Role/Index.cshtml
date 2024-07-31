@@ -1,0 +1,166 @@
+﻿@{
+    ViewData["Title"] = "Admin-Roller";
+    int restaurantCount = Convert.ToInt32(ViewData["restaurantCount"]);
+}
+@model List<FoodOrderApp.Models.DTO.RoleWithUsersDto>
+
+<div class="modal fade" id="addRoleModal" tabindex="-1" aria-labelledby="RoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="RoleModalLabel">Add Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Role Name</label>
+                        <input type="text" name="Name" class="form-control" id="Name" required>
+                    </div>
+                    <input type="hidden" id="roleId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="saveRoleButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/Admin/Index" style="color:indigo;">Ana Sayfa</a>
+                </li>
+                <li class="breadcrumb-item active">Roller</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row mb-3 d-flex align-items-center">
+        <div class="col-12 col-sm-6 mb-3 mb-sm-0">
+            
+        </div>
+        <div class="col-12 col-sm-6">
+            <button class="btn btn-primary mb-3" id="addRoleButton">Add Role</button>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8 table-responsive">
+            <table id="role-table" class="table align-middle caption-top text-center">
+                <caption>Roller Listesi</caption>
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Rol Adı</th>
+                        <th>Kullanıcı Sayısı</th>
+                        <th>Sil</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int index = 1;
+                    }
+                    @foreach (var role in Model)
+                    {
+                       
+                         <tr id=@role?.RoleId>
+                            <td>@index</td>
+                            <td>@role?.Name</td>
+                            <td>@(role?.Name?.ToLower() == "COMPANY" ? restaurantCount : role?.Values?.Count)</td>
+                            <td><a id="btnSil" data-roleId="@role?.RoleId" data-roleName="@role?.Name" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Sil</a></td>
+                        </tr>
+                        index++;
+                       
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!--toast start-->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Yemek Sipariş Sistemi</strong>
+            <small>Az Önce...</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-message">
+        </div>
+    </div>
+</div>
+<!--toast end-->
+<!--Delete Modal-->
+<div class="modal" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rol Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteModalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">İptal</button>
+                <button type="button" id="deleteRole" class="btn btn-primary btn-sm">Evet</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Finish Delete Modal-->
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        function OpenDeleteModal(id, name) {
+            $("#deleteModalMessage").text(name + " isimli rol silinsin mi?");
+            $("#deleteRole").data("data-name", name);
+
+        }
+
+        $(document).ready(function () {
+            $("#addRoleButton").click(function () {
+                $("#Name").val("");
+                $("#addRoleModal").modal('show');
+            });
+
+            $("#saveRoleButton").click(function () {
+                const role = {
+                    Name: $("#Name").val()
+                };
+
+                if (role.Name) {
+                    $.post("/Admin/Roles/Create", role, function (response) {
+                        if (response) {
+                            window.location.reload();
+                            $("#addRoleModal").modal('hide');
+                        }
+                    }).fail(function (response) {
+                        alert(response.responseText);
+                    });
+                }
+            });
+
+            $(document).on("click", "#btnSil", function () {
+                const roleId = $(this).data("roleid");
+                const roleName = $(this).data("rolename");
+
+                OpenDeleteModal(roleId, roleName);
+            });
+
+            $("#deleteRole").click(function () {
+                let Name = $(this).data("data-name");
+                $.post("/Admin/Roles/Delete/" + Name, function () {
+                        window.location.reload();
+                       
+                }).fail(function (response) {
+                    alert(response.responseText);
+                });
+            });
+        });
+    </script>
+}

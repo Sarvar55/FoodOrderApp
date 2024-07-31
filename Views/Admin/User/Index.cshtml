@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "Admin-Kullanıcılar";
+}
+
+@model List<FoodOrderApp.Models.DTO.UserDto>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page">
+                    <a href="/Admin/Index" style="color:indigo;">Ana Sayfa</a>
+                </li>
+                <li class="breadcrumb-item active">Kullanıcılar</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row py-3 justify-content-center">
+        <div class="col-8 mb-3">
+            <div class="table-responsive">
+                <table class="table align-middle caption-top text-center">
+                    <caption>Kullanıcılar Listesi</caption>
+                    <thead class="table-light">
+                        <tr>
+                            <th>Role</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>Email</th>
+                            <th>Addresses</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="7"> Kayıtlı kullanıcı bulunmamaktadır!</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var user in Model)
+                            {
+                                <tr id="@user.Id">
+                                    <td>@user.RoleName</td>
+                                    <td>@user.UserName</td>
+                                    <td>@user.LastName</td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        @foreach (var address in user?.Address)
+                                        {
+                                            <p>@address.Street, @address.City, @address.Neighbourhood, @address.PostalCode</p>
+                                        }
+                                    </td>
+                                    <td><a href="/Admin/Users/Detail/@user.Id" type="button" class="btn btn-success btn-sm">Düzenle</a></td>
+                                    <td><button onclick="OpenUserDeleteModal('@user.Id', '@user.UserName', '@user.LastName')" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#userDeleteModal">Sil</button></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12 text-center">
+            <a href="/Admin/Users/Create" type="button" class="btn btn-sm btn-outline-primary">Yeni Kullanıcı Ekle</a>
+        </div>
+    </div>
+</div>
+
+<!--toast start-->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Yemek Sipariş Sistemi</strong>
+            <small>Az Önce...</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-message">
+        </div>
+    </div>
+</div>
+<!--toast end-->
+<!--Delete Modal-->
+<div class="modal" id="userDeleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kullanıcı Sil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="userDeleteModalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">İptal</button>
+                <button type="button" id="btnDeleteUser" class="btn btn-primary btn-sm">Evet</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Finish Delete Modal-->
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+
+        function OpenUserDeleteModal(id, userName, userLastName) {
+            $("#userDeleteModalMessage").text(userName + " " + userLastName + " isimli kullanıcı silinsin mi?");
+            $("#btnDeleteUser").data("id", id);
+            $("#btnDeleteUser").data("name", userName + " " + userLastName);
+        }
+
+        $(document).ready(function () {
+            $("#btnDeleteUser").click(function () {
+                let userId = $(this).data("id");
+                let userFullName = $(this).data("name");
+
+                $.post("/Admin/Users/Delete/" + userId)
+                .done(()=>{   
+                    
+                  alert("Kullanıcı Silme işlemi Tamamlaıdı");
+                    window.location.reload();
+                }).fail((xhr,error,e)=>{
+                        $("#userDeleteModal").modal("toggle");
+                        alert("Kullanıcı Silme işlemi başarısız!!!");
+                    console.log(xhr.responseText);
+                })
+                $("userDeleteModal").modal("hide");
+            });
+        });
+
+        function TriggerToast(message, status) {
+            const toast = document.getElementById('toast');
+            const messageBody = document.getElementById("toast-message");
+            messageBody.innerText = message + " isimli kullanıcı, başarılı bir şekilde " + status;
+            const instance = bootstrap.Toast.getOrCreateInstance(toast);
+            instance.show();
+        }
+
+    </script>
+}

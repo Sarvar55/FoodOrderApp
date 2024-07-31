@@ -1,0 +1,63 @@
+﻿@model FoodOrderApp.Models.Domains.User
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">My Profile</h3>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group mb-3">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" value="@Model.Email" readonly />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" value="@Model.UserName" readonly />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" value="@Model.Lastname" readonly />
+                        </div>
+                        @if (Model.Addresses != null && Model.Addresses.Count > 0)
+                        {
+                            <div class="form-group mb-3 scrollable">
+                                <label for="address">Address</label>
+                                @foreach (var address in Model.Addresses)
+                                {
+                                    <div class="border rounded p-2 mb-2">
+                                        <p><strong>Neighbourhood:</strong> @address.Neighbourhood</p>
+                                        <p><strong>Street:</strong> @address.Street</p>
+                                        <p><strong>City:</strong> @address.City</p>
+                                        <p><strong>Postal Code:</strong> @address.PostalCode</p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        <h5 class="card-title">Roles</h5>
+                        @if (Model.Roles != null && Model.Roles.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <li class="list-group-item fw-bolder text-danger">@role.Name</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No roles assigned.</p>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,115 @@
+﻿@using FoodOrderApp.Models.Domains
+@model Dish
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row d-flex flex-column">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="/Meal/@Model.Image" class="img-fluid rounded-start" alt="@Model.Name">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Name</h5>
+                            <p class="card-text">@Model.Description</p>
+                            <p class="card-text">Price: <strong>@Model.Price TL</strong></p>
+                            <p class="card-text">Average Rating: <strong>@ViewBag.AverageRating.ToString("0.0")</strong> / 5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4>Comments</h4>
+            @if (Model.Reviews.Count == 0)
+            {
+                <p>No comments yet.</p>
+            }
+            else
+            {
+                <ul class="list-group">
+                    @foreach (var comment in Model.Reviews)
+                    {
+                        <li class="list-group-item">
+                            <strong>@comment.User.UserName</strong>: @comment.DishComments
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h4>Leave a Comment</h4>
+            <form id="comment-form" method="post">
+                <input type="hidden" name="dishId" value="@Model.Id" />
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Comment</label>
+                    <textarea id="comment" name="comment" class="form-control" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+            <h4 class="mt-4">Rate this Dish</h4>
+            <div id="rating" class="star-rating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <i class="bi bi-star pe-auto" style="font-size:24px; @((i <= (int)ViewBag.UserRating) ? "color:gold;" : "color:black;")" data-value="@i"></i>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".star-rating .bi-star").on("click", function () {
+                var rating = $(this).data("value");
+                var dishId = "@Model.Id";
+                $("#rating-value").val(rating);
+                $(".star-rating .bi-star").each(function (index) {
+                    if (index < rating) {
+                        $(this).addClass("checked");
+                    } else {
+                        $(this).removeClass("checked");
+                    }
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "/Dish/Rating/Add",
+                    data: { dishId: dishId, ratingValue: rating },
+                    success: function () {
+                        alert("Rating submitted successfully!");
+                        location.reload();
+                    },
+                    error: function (response) {
+                        alert("Error: " + response.responseText);
+                    }
+                });
+            });
+
+            $("#comment-form").on("submit", function (e) {
+                e.preventDefault();
+
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: "POST",
+                    url: "/Dish/Comment/Add",
+                    data: formData,
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
